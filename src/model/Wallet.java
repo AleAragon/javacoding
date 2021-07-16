@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Wallet {
     
     public static final int CAPACIDAD_MAXIMA = 1000000;
@@ -8,11 +10,20 @@ public class Wallet {
     private boolean tieneLimite;
     private int meta;
 
+    /**
+     * Lista
+     */
+
+    private ArrayList<Transaction> transactions;
+
+
+
     public Wallet() {
         super();
         saldo = 0;
         tieneLimite = true;
         meta = 0;
+        transactions = new ArrayList<>();
     }
     
     public int getSaldo(){
@@ -32,16 +43,20 @@ public class Wallet {
             return "No se puede superar el limite " + CAPACIDAD_MAXIMA;
         }
         saldo += value; //saldo = saldo + value
+        Transaction ingreso = new Transaction(value, "hoy", 1, "Ingreso de dinero");
+        transactions.add(ingreso);
         if(verificarMeta())
             System.out.println("Has cumplido la meta");
         return "Transaccción exitosa, Nuevo Saldo: " + saldo;
     }
 
-    public String getMoney(int value){
+    public String takeMoney(int value){
         if (saldo < value) {
             return "Saldo Insuficiente";
         }
         saldo -= value;
+        Transaction retiro = new Transaction(value, "hoy", 2, "Retiro de dinero");
+        transactions.add(retiro);
         return "Transaccción exitosa, Nuevo Saldo: " + saldo;
     }
 
@@ -52,6 +67,8 @@ public class Wallet {
         
         if (saldo >= 10000) {
             saldo -= 10000;
+            Transaction limite = new Transaction(10000, "hoy", 2, "Romper límite de ceunta");
+            transactions.add(limite);
             setTieneLimite(false); //tieneLimite = false 
             return "Haz roto los límites";
         }
@@ -90,6 +107,12 @@ public class Wallet {
         
         return true;
 
+    }
+
+    public void displayMovimientos(){
+        for(Transaction movimiento : transactions){
+            System.out.println(movimiento);
+        }
     }
 
 
